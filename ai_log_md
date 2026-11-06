@@ -1500,6 +1500,75 @@ function ciz() {
 hepsiniCiz();
 requestAnimationFrame(ciz);
 
+html-----------------------
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Keşfet Dünya</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ÜST MENÜ -->
+  <header class="ust">
+    <div class="logo"><span class="logo-ikon">🌍</span> Keşfet <b>Dünya</b></div>
+    <nav>
+      <a href="#ana" class="aktif">Ana Sayfa</a>
+      <a href="#populer">Ülkeleri Keşfet</a>
+      <a href="#favler">Favorilerim</a>
+    </nav>
+    <input id="ara" type="search" placeholder="Ülke ara…" aria-label="Ülke ara">
+    <button class="kullanici" aria-label="Hesap">👤</button>
+  </header>
+
+  <main id="ana">
+    <!-- ANA BÖLÜM: sol yazı / orta dünya / sağ ülke paneli -->
+    <section class="hero">
+      <div class="sol">
+        <span class="rozet">🧭 DÜNYAYI KEŞFET</span>
+        <h1>Yeni yerler<br>gör, yeni<br><em>hikayeler biriktir.</em></h1>
+        <p>Dünya üzerindeki birbirinden güzel ülkeleri keşfet, kültürlerini tanı ve bir sonraki seyahat rotanı planla.</p>
+      </div>
+
+      <div class="orta">
+        <div class="kure" id="kure">
+          <canvas id="kureCanvas" aria-label="Döndürülebilir dünya"></canvas>
+          <div id="pinler"></div>
+        </div>
+        <div class="ipucu">
+          <svg class="fare" viewBox="0 0 24 36" width="26" height="38" aria-hidden="true">
+            <rect x="2" y="2" width="20" height="32" rx="10" fill="none" stroke="currentColor" stroke-width="2"/>
+            <rect class="tekerlek" x="11" y="8" width="2" height="7" rx="1" fill="currentColor"/>
+          </svg>
+          <p>Ülkelere tıklayarak keşfet!<small>Dünyayı sürükleyerek döndür</small></p>
+        </div>
+      </div>
+
+      <aside class="panel" id="panel" aria-live="polite"></aside>
+    </section>
+
+    <!-- POPÜLER ÜLKELER -->
+    <section class="populer" id="populer">
+      <div class="baslik-satir">
+        <h2>📍 Popüler Ülkeler</h2>
+        <a href="#populer" id="tumunu">Tümünü Gör →</a>
+      </div>
+      <div class="kartlar" id="kartlar"></div>
+    </section>
+
+    <!-- FAVORİLER -->
+    <section class="favler" id="favler">
+      <h2>♥ Favorilerim</h2>
+      <ul id="favListe"></ul>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
+
 
 
 ------------------------------------------ve bu cevabı nasıl kullandığım---------------------------------------------------------------
