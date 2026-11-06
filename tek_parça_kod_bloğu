@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Keşfet Dünya</title>
+  <style>
+/* ===== RENKLER (tek yerden değişir) ===== */
+:root{
+  --bg:#050e1c; --panel:#0a1a2e; --kutu:#0d2036; --cizgi:#17324f;
+  --yazi:#f1f6fc; --soluk:#93a9c3; --turkuaz:#2ee6d0;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--yazi);font-family:"Segoe UI",system-ui,Arial,sans-serif;line-height:1.5}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+
+/* Resim kutuları: görsel yüklenmezse arkadaki renk geçişi görünür */
+.gorsel{position:relative;overflow:hidden;background:linear-gradient(135deg,#1b4a6e,#0b2036)}
+.gorsel img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+
+/* ===== ÜST MENÜ ===== */
+.ust{display:flex;align-items:center;gap:32px;padding:12px 4%;background:#06142a;border-bottom:1px solid var(--cizgi)}
+.logo{font-size:1.7rem;font-weight:700;display:flex;align-items:center;gap:8px}
+.logo b{color:var(--turkuaz)}
+nav{display:flex;gap:28px;flex:1}
+nav a{color:var(--yazi);padding:18px 0;font-size:.95rem}
+nav a.aktif{color:var(--turkuaz);border-bottom:2px solid var(--turkuaz)}
+#ara{width:340px;background:var(--kutu);border:1px solid var(--cizgi);border-radius:24px;padding:10px 18px;color:var(--yazi)}
+#ara::placeholder{color:var(--soluk)}
+.kullanici{width:42px;height:42px;border:1px solid var(--cizgi);border-radius:50%;font-size:1.1rem}
+
+/* ===== HERO ===== */
+.hero{display:grid;grid-template-columns:1fr 1.25fr 420px;gap:24px;align-items:center;padding:36px 4% 30px}
+.rozet{display:inline-block;border:1px solid #1d6f73;color:var(--turkuaz);border-radius:20px;padding:8px 20px;font-size:.8rem;letter-spacing:.08em;margin-bottom:34px}
+h1{font-size:clamp(2.4rem,4.2vw,3.8rem);line-height:1.12;font-weight:800}
+h1 em{font-style:normal;color:var(--turkuaz)}
+.sol p{color:#d0dcea;margin-top:28px;max-width:32ch;font-size:1.05rem}
+
+/* Dünya */
+.orta{text-align:center}
+.kure{position:relative;width:min(520px,100%);aspect-ratio:1;margin:0 auto;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#4aa3d9,#1d5f9c 45%,#06152b);
+  box-shadow:0 0 70px rgba(40,150,255,.55),0 0 0 1px rgba(120,200,255,.35)}
+.kure .zemin{position:absolute;inset:0;border-radius:50%;overflow:hidden}
+.kure .zemin img{width:118%;height:118%;margin:-9% 0 0 -9%;object-fit:cover}
+.pin{position:absolute;display:flex;align-items:center;gap:6px;background:#07182b;border:1px solid #1e4466;border-radius:22px;padding:4px 12px 4px 5px;font-size:.85rem;font-weight:600;transform:translate(-50%,-50%);white-space:nowrap}
+.pin img{width:22px;height:22px;border-radius:50%;object-fit:cover}
+.pin::after{content:"";position:absolute;left:50%;bottom:-9px;width:10px;height:10px;background:#fff;border-radius:50% 50% 50% 0;transform:translateX(-50%) rotate(-45deg);border:2px solid #2a6ea6}
+.pin:hover,.pin.aktif{background:var(--turkuaz);color:#032420;border-color:var(--turkuaz)}
+.ipucu{margin-top:22px;color:#d0dcea;font-size:.9rem}
+
+/* Ülke paneli */
+.panel{background:var(--panel);border:1px solid var(--cizgi);border-radius:18px;padding:18px}
+.panel .foto{height:130px;border-radius:12px}
+.kalp{position:absolute;top:10px;right:10px;width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,.45);font-size:1.1rem;z-index:2}
+.kalp.ekli{color:#ff5c7a}
+.ulke-baslik{display:flex;align-items:center;gap:14px;margin:-22px 0 14px 10px;position:relative}
+.ulke-baslik img{width:54px;height:54px;border-radius:50%;object-fit:cover;border:3px solid var(--panel)}
+.ulke-baslik h3{font-size:1.6rem;line-height:1.1}
+.ulke-baslik small{color:#d0dcea;font-size:.9rem}
+.bilgi{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+.bilgi div{display:flex;gap:10px;align-items:center;background:var(--kutu);border:1px solid var(--cizgi);border-radius:10px;padding:10px 12px;font-size:.95rem}
+.bilgi small{display:block;color:var(--soluk);font-size:.72rem}
+.bilgi span{color:var(--turkuaz);font-size:1.3rem}
+.panel h4{margin-bottom:10px}
+.yerler{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.yerler .gorsel{height:68px;border-radius:8px}
+.yerler small{display:block;margin-top:4px;font-size:.82rem}
+.fav-btn{width:100%;background:var(--turkuaz);color:#032420;font-weight:700;border-radius:26px;padding:12px}
+.fav-btn.ekli{background:transparent;color:var(--turkuaz);border:1px solid var(--turkuaz)}
+
+/* ===== POPÜLER ÜLKELER ===== */
+.populer{padding:20px 4% 40px}
+.baslik-satir{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.baslik-satir h2,.favler h2{font-size:1.35rem}
+#tumunu{color:var(--turkuaz);font-size:.9rem}
+.kartlar{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
+.kart{background:var(--panel);border:1px solid var(--cizgi);border-radius:12px;overflow:hidden;text-align:left;transition:border-color .2s}
+.kart:hover,.kart.aktif{border-color:var(--turkuaz)}
+.kart .gorsel{height:110px}
+.kart-alt{padding:12px}
+.kart-ust{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.kart-ust img{width:32px;height:32px;border-radius:50%;object-fit:cover}
+.kart-ust strong{flex:1}
+.ok{width:28px;height:28px;border-radius:50%;border:1px solid var(--turkuaz);color:var(--turkuaz);display:grid;place-items:center;font-size:.8rem}
+.kart small{color:#c3d1e2}
+
+/* ===== FAVORİLER ===== */
+.favler{padding:0 4% 50px}
+.favler ul{list-style:none;display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.favler li{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--cizgi);border-radius:22px;padding:6px 16px 6px 8px}
+.favler li img{width:24px;height:24px;border-radius:50%;object-fit:cover}
+.favler .bos{color:var(--soluk);padding:6px 16px}
+
+/* ===== MOBİL / TABLET ===== */
+@media(max-width:1200px){.hero{grid-template-columns:1fr 1fr}.panel{grid-column:1/-1}.kartlar{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:760px){
+  .ust{flex-wrap:wrap;gap:12px}nav{order:3;width:100%;gap:18px}#ara{width:100%;flex:1}
+  .hero{grid-template-columns:1fr}.kartlar{grid-template-columns:repeat(2,1fr)}
+}
+
+/* ===== DÖNEN DÜNYA (sürükleyerek döner) ===== */
+.kure canvas{position:absolute;inset:0;width:100%;height:100%;border-radius:50%;cursor:grab;touch-action:none}
+.kure canvas:active{cursor:grabbing}
+#pinler{position:absolute;inset:0;pointer-events:none}
+.pin{pointer-events:auto;transform:translate(-50%,calc(-100% - 12px));transition:opacity .25s}
+.pin.gizli{opacity:0;pointer-events:none}
+.ipucu{display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:22px;color:#d0dcea;font-size:.95rem}
+.ipucu small{display:block;color:var(--soluk);font-size:.8rem}
+.fare{color:var(--turkuaz)}
+.tekerlek{animation:tekerlek 1.6s ease-in-out infinite}
+@keyframes tekerlek{0%,100%{transform:translateY(0);opacity:1}50%{transform:translateY(6px);opacity:.3}}
+@media(prefers-reduced-motion:reduce){.tekerlek{animation:none}}
+
+/* Çizilmiş manzara arka planı */
+.gorsel{background-size:cover;background-position:center}
+
+/* Ekran görüntüsüne yaklaştırma: logo küresi, ikonlar */
+.logo-ikon{width:42px;height:42px;border-radius:50%;display:inline-block;font-size:0;
+  background:radial-gradient(circle at 35% 30%,#8fd0ff,#2a78b8 50%,#06152b);box-shadow:0 0 14px rgba(70,170,255,.6)}
+.bilgi span{display:grid;place-items:center}
+.panel h4{display:flex;align-items:center;gap:8px;font-size:1.05rem}
+.yildiz{color:var(--turkuaz)}
+</style>
+</head>
+<body>
+
+  <!-- ÜST MENÜ -->
+  <header class="ust">
+    <div class="logo"><span class="logo-ikon">🌍</span> Keşfet <b>Dünya</b></div>
+    <nav>
+      <a href="#ana" class="aktif">Ana Sayfa</a>
+      <a href="#populer">Ülkeleri Keşfet</a>
+      <a href="#favler">Favorilerim</a>
+    </nav>
+    <input id="ara" type="search" placeholder="Ülke ara…" aria-label="Ülke ara">
+    <button class="kullanici" aria-label="Hesap">👤</button>
+  </header>
+
+  <main id="ana">
+    <!-- ANA BÖLÜM: sol yazı / orta dünya / sağ ülke paneli -->
+    <section class="hero">
+      <div class="sol">
+        <span class="rozet">🧭 DÜNYAYI KEŞFET</span>
+        <h1>Yeni yerler<br>gör, yeni<br><em>hikayeler biriktir.</em></h1>
+        <p>Dünya üzerindeki birbirinden güzel ülkeleri keşfet, kültürlerini tanı ve bir sonraki seyahat rotanı planla.</p>
+      </div>
+
+      <div class="orta">
+        <div class="kure" id="kure">
+          <canvas id="kureCanvas" aria-label="Döndürülebilir dünya"></canvas>
+          <div id="pinler"></div>
+        </div>
+        <div class="ipucu">
+          <svg class="fare" viewBox="0 0 24 36" width="26" height="38" aria-hidden="true">
+            <rect x="2" y="2" width="20" height="32" rx="10" fill="none" stroke="currentColor" stroke-width="2"/>
+            <rect class="tekerlek" x="11" y="8" width="2" height="7" rx="1" fill="currentColor"/>
+          </svg>
+          <p>Ülkelere tıklayarak keşfet!<small>Dünyayı sürükleyerek döndür</small></p>
+        </div>
+      </div>
+
+      <aside class="panel" id="panel" aria-live="polite"></aside>
+    </section>
+
+    <!-- POPÜLER ÜLKELER -->
+    <section class="populer" id="populer">
+      <div class="baslik-satir">
+        <h2>📍 Popüler Ülkeler</h2>
+        <a href="#populer" id="tumunu">Tümünü Gör →</a>
+      </div>
+      <div class="kartlar" id="kartlar"></div>
+    </section>
+
+    <!-- FAVORİLER -->
+    <section class="favler" id="favler">
+      <h2>♥ Favorilerim</h2>
+      <ul id="favListe"></ul>
+    </section>
+  </main>
+
+  <script>
+/* =====================================================
+   KEŞFET DÜNYA - script.js
+   1) Veri  2) Yardımcılar  3) Ekrana çizen fonksiyonlar  4) Olaylar
+   ===================================================== */
+
+/* ---------- 1) VERİ ----------
+   Görseller Wikimedia Commons (özgür lisans) ve NASA (kamu malı) kaynaklıdır.
+   Bayraklar flagcdn.com'dan gelir. Bir görsel açılmazsa arkadaki renk geçişi görünür,
+   sayfa bozulmaz. Başka görsel istersen sadece dosya adını değiştir. */
+const commons = (dosya) =>
+  "https://commons.wikimedia.org/wiki/Special:FilePath/" + encodeURIComponent(dosya) + "?width=700";
+/* ---------- İÇ GÖRSELLER (internet gerektirmez) ----------
+   Bayraklar ve ülke/yer resimleri SVG olarak kodla çizilir; her zaman görünür ve telif sorunu yoktur.
+   Gerçek fotoğraf eklemek istersen aşağıdaki veri listesinde "foto" alanına kendi resim yolunu yaz
+   (örn. "resimler/turkiye.jpg"). Fotoğraf yüklenirse çizimin üstünü kaplar. */
+const svgUri = (s) => "data:image/svg+xml;utf8," + encodeURIComponent(s);
+const yildiz = (cx, cy, r) => Array.from({ length: 10 }, (_, i) => {
+  const a = -Math.PI / 2 + i * Math.PI / 5, k = i % 2 ? r * 0.4 : r;
+  return (cx + k * Math.cos(a)).toFixed(1) + "," + (cy + k * Math.sin(a)).toFixed(1);
+}).join(" ");
+const BAYRAKLAR = {
+  tr: `<rect width="90" height="60" fill="#e30a17"/><circle cx="34" cy="30" r="14" fill="#fff"/><circle cx="38.5" cy="30" r="11.2" fill="#e30a17"/><polygon points="${yildiz(50, 30, 7)}" fill="#fff"/>`,
+  it: `<rect width="30" height="60" fill="#009246"/><rect x="30" width="30" height="60" fill="#fff"/><rect x="60" width="30" height="60" fill="#ce2b37"/>`,
+  jp: `<rect width="90" height="60" fill="#fff"/><circle cx="45" cy="30" r="17" fill="#bc002d"/>`,
+  eg: `<rect width="90" height="20" fill="#ce1126"/><rect y="20" width="90" height="20" fill="#fff"/><rect y="40" width="90" height="20" fill="#000"/><circle cx="45" cy="30" r="5" fill="#c09300"/>`,
+  br: `<rect width="90" height="60" fill="#009c3b"/><polygon points="45,6 83,30 45,54 7,30" fill="#ffdf00"/><circle cx="45" cy="30" r="13" fill="#002776"/>`
+};
+const bayrak = (kod) => svgUri(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 90 60" preserveAspectRatio="xMidYMid slice">${BAYRAKLAR[kod]}</svg>`);
+
+// Çizilmiş manzaralar (300x170)
+const gok = (a, b) => `<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs><rect width="300" height="170" fill="url(#g)"/>`;
+const minare = (x, h) => `<rect x="${x - 4}" y="${135 - h}" width="8" height="${h}" fill="#e9d2b0"/><polygon points="${x - 5},${135 - h} ${x},${135 - h - 22} ${x + 5},${135 - h}" fill="#7d8aa0"/>`;
+const SAHNE = {
+  ayasofya: () => gok("#2f2f6e", "#f4a261") + `<circle cx="235" cy="45" r="16" fill="#ffe7b3" opacity=".85"/><rect y="135" width="300" height="35" fill="#1b3556"/><rect x="95" y="98" width="110" height="38" fill="#d9a36b"/><path d="M108 98a42 42 0 0 1 84 0z" fill="#c4875a"/><path d="M134 72a16 16 0 0 1 32 0z" fill="#b9774f"/>` + minare(70, 70) + minare(230, 70) + minare(88, 50) + minare(212, 50),
+  balon: () => gok("#f6a5b9", "#ffd89b") + `<polygon points="0,170 60,95 120,170" fill="#b87a52"/><polygon points="70,170 140,80 210,170" fill="#a56a46"/><polygon points="170,170 235,100 300,170" fill="#b87a52"/>` + [[70, 45, "#e63946"], [150, 30, "#f4d35e"], [225, 55, "#3a86ff"]].map(([x, y, c]) => `<ellipse cx="${x}" cy="${y}" rx="17" ry="21" fill="${c}"/><rect x="${x - 4}" y="${y + 25}" width="8" height="6" fill="#5a3a22"/>`).join(""),
+  travertan: () => gok("#6bb8e8", "#d8f0fb") + `<rect y="110" width="300" height="60" fill="#e9f7ff"/>` + [0, 1, 2, 3].map((i) => `<ellipse cx="150" cy="${112 + i * 15}" rx="${120 + i * 14}" ry="12" fill="#7fd0e6" stroke="#fff" stroke-width="4"/>`).join(""),
+  kolezyum: () => gok("#5b4b8a", "#f7b267") + `<rect y="140" width="300" height="30" fill="#6b5a3a"/><path d="M40 140V80q110-40 220 0v60z" fill="#c9a26a"/>` + [0, 1, 2].map((r) => [...Array(7)].map((_, i) => `<rect x="${58 + i * 28}" y="${88 + r * 18}" width="12" height="12" rx="6" fill="#6b4a2a"/>`).join("")).join(""),
+  venedik: () => gok("#7ec8e3", "#fde7c3") + `<rect y="120" width="300" height="50" fill="#2f78a8"/>` + [[10, 60, "#e9a07a"], [70, 80, "#f2cf8b"], [130, 55, "#d98c6c"], [190, 75, "#efc4a0"], [245, 55, "#e0a58a"]].map(([x, h, c]) => `<rect x="${x}" y="${120 - h}" width="48" height="${h}" fill="${c}"/><rect x="${x + 8}" y="${130 - h}" width="8" height="12" fill="#6b3a2a"/><rect x="${x + 30}" y="${130 - h}" width="8" height="12" fill="#6b3a2a"/>`).join("") + `<path d="M110 150q40 14 80 0l-8-10h-64z" fill="#222"/>`,
+  pisa: () => gok("#8ed1f5", "#e9f7ff") + `<rect y="135" width="300" height="35" fill="#5fae5c"/><g transform="rotate(6 150 136)">` + [0, 1, 2, 3, 4, 5].map((i) => `<rect x="132" y="${40 + i * 16}" width="36" height="14" fill="${i % 2 ? "#f1ece0" : "#fffaf0"}" stroke="#cfc7b4"/>`).join("") + `</g>`,
+  fuji: () => gok("#7fb7e6", "#fbd1df") + `<polygon points="40,150 150,45 260,150" fill="#4a6fa5"/><polygon points="122,73 150,45 178,73 165,67 150,78 135,67" fill="#fff"/><rect y="148" width="300" height="22" fill="#2d5f8a"/>` + [[40, 120], [70, 105], [240, 115], [265, 100], [220, 95]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="16" fill="#f7a6c4"/><circle cx="${x + 10}" cy="${y + 8}" r="11" fill="#f4bfd4"/>`).join(""),
+  pagoda: () => gok("#2b2d5b", "#f19a6a") + `<rect y="148" width="300" height="22" fill="#23304a"/>` + [0, 1, 2, 3].map((i) => { const w = 96 - i * 16, y = 148 - i * 28; return `<rect x="${150 - w / 2 + 6}" y="${y - 18}" width="${w - 12}" height="18" fill="#a3321f"/><polygon points="${150 - w / 2 - 8},${y - 18} ${150 + w / 2 + 8},${y - 18} ${150 + w / 2 - 8},${y - 30} ${150 - w / 2 + 8},${y - 30}" fill="#3a2a2a"/>`; }).join(""),
+  tokyo: () => gok("#10163a", "#5b3a7a") + `<rect y="150" width="300" height="20" fill="#0b0f26"/>` + [[10, 70], [40, 95], [75, 60], [210, 85], [240, 65], [270, 105]].map(([x, h]) => `<rect x="${x}" y="${150 - h}" width="26" height="${h}" fill="#1c2250"/>` + [...Array(Math.floor(h / 14))].map((_, i) => `<rect x="${x + 5}" y="${156 - h + i * 14}" width="4" height="5" fill="#ffd36b"/><rect x="${x + 16}" y="${156 - h + i * 14}" width="4" height="5" fill="#ffd36b"/>`).join("")).join("") + `<polygon points="150,30 128,150 172,150" fill="none" stroke="#ff5a4f" stroke-width="5"/><line x1="134" y1="110" x2="166" y2="110" stroke="#ff5a4f" stroke-width="4"/>`,
+  piramit: () => gok("#f2b36b", "#fbe3a8") + `<circle cx="240" cy="45" r="18" fill="#fff3c4"/><rect y="130" width="300" height="40" fill="#e0b36a"/><polygon points="40,135 130,50 220,135" fill="#d49a4f"/><polygon points="130,50 220,135 130,135" fill="#b9803c"/><polygon points="170,135 225,85 280,135" fill="#d9a35a"/><polygon points="225,85 280,135 225,135" fill="#b9803c"/>`,
+  tapinak: () => gok("#f0b86e", "#f8dba0") + `<rect y="140" width="300" height="30" fill="#d9a85c"/><rect x="40" y="35" width="220" height="105" fill="#c28a4a"/>` + [0, 1, 2, 3].map((i) => `<rect x="${58 + i * 52}" y="70" width="30" height="70" fill="#d8a565"/><circle cx="${73 + i * 52}" cy="62" r="9" fill="#d8a565"/>`).join("") + `<rect x="40" y="35" width="220" height="10" fill="#a8733a"/>`,
+  kahire: () => gok("#f6a56a", "#ffe0a8") + `<rect y="140" width="300" height="30" fill="#d9b06a"/><path d="M110 140v-30a40 36 0 0 1 80 0v30z" fill="#e8c88a"/>` + minare(90, 60) + minare(210, 60) + minare(60, 40) + minare(240, 40) + `<rect x="20" y="100" width="22" height="40" fill="#c7995a"/><rect x="258" y="105" width="22" height="35" fill="#c7995a"/>`,
+  cristo: () => gok("#7cc4f0", "#d6f0fb") + `<path d="M0 150Q80 60 150 90T300 120V170H0z" fill="#2f8f5a"/><rect y="150" width="300" height="20" fill="#2a74b5"/><g fill="#fff"><rect x="140" y="52" width="10" height="40"/><rect x="110" y="58" width="70" height="8"/><circle cx="145" cy="46" r="6"/></g>`,
+  selale: () => gok("#6fc3a8", "#cdeee2") + `<rect y="60" width="110" height="110" fill="#2f7a4a"/><rect x="190" y="60" width="110" height="110" fill="#2f7a4a"/>` + [0, 1, 2, 3, 4].map((i) => `<rect x="${112 + i * 15}" y="60" width="11" height="90" fill="#f4fbff" opacity=".9"/>`).join("") + `<ellipse cx="150" cy="152" rx="70" ry="12" fill="#e9f7ff"/>`,
+  orman: () => gok("#9ad7a8", "#2f7a4a") + `<path d="M0 135Q80 115 150 135T300 130V170H0z" fill="#2a74b5"/>` + [...Array(14)].map((_, i) => `<circle cx="${10 + i * 22}" cy="${100 + (i % 3) * 10}" r="${22 - (i % 2) * 4}" fill="${i % 2 ? "#1f6b3a" : "#2f8f4a"}"/>`).join("")
+};
+// Hangi ülke / yer hangi manzarayı kullanır
+const SAHNE_ULKE = { tr: "ayasofya", it: "kolezyum", jp: "fuji", eg: "piramit", br: "cristo" };
+const SAHNE_YER = { "Kapadokya": "balon", "İstanbul": "ayasofya", "Pamukkale": "travertan", "Roma": "kolezyum", "Venedik": "venedik", "Pisa": "pisa",
+  "Fuji Dağı": "fuji", "Kyoto": "pagoda", "Tokyo": "tokyo", "Giza": "piramit", "Ebu Simbel": "tapinak", "Kahire": "kahire", "Rio": "cristo", "Iguazu": "selale", "Amazon": "orman" };
+// Kutunun arka planına manzarayı koyar
+const arka = (ad) => `background-image:url('${svgUri(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 170" preserveAspectRatio="xMidYMid slice">${SAHNE[ad]()}</svg>`)}')`;
+
+
+const ulkeler = [
+  { id:"tr", ad:"Türkiye", bayrak:bayrak("tr"), slogan:"Avrupa ve Asya'nın buluşma noktası",
+    kisa:"Tarih, doğa ve kültürün buluşma noktası",
+    baskent:"Ankara", dil:"Türkçe", para:"Türk lirası (TRY)", kita:"Asya / Avrupa",
+    foto:["https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Hagia_Sophia_Mars_2013.jpg/960px-Hagia_Sophia_Mars_2013.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Istanbul_Hagia_Sophia_IMG_7406_1800.jpg/960px-Istanbul_Hagia_Sophia_IMG_7406_1800.jpg"], pin:{x:70,y:22},
+    yerler:[
+      {ad:"Kapadokya", foto:["https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Cappadocia_Balloon_Inflating_Wikimedia_Commons.jpg/500px-Cappadocia_Balloon_Inflating_Wikimedia_Commons.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Cappadocia_-_G%C3%B6reme.jpg/500px-Cappadocia_-_G%C3%B6reme.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Goreme_Cappadocia.jpg/500px-Goreme_Cappadocia.jpg"]},
+      {ad:"İstanbul", foto:["https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Sultan_Ahmed_Mosque_Istanbul_Turkey_retouched.jpg/500px-Sultan_Ahmed_Mosque_Istanbul_Turkey_retouched.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Hagia_Sophia233msu.jpg/500px-Hagia_Sophia233msu.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Hagia_Sophia_Mars_2013.jpg/500px-Hagia_Sophia_Mars_2013.jpg"]},
+      {ad:"Pamukkale", foto:["https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Pamukkale_9RB.jpg/500px-Pamukkale_9RB.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Pamukkale_12.jpg/500px-Pamukkale_12.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Pamukkale_32.jpg/500px-Pamukkale_32.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Pamukkale_panorama_2.jpg/500px-Pamukkale_panorama_2.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Pamukkale_Hierapolis_Travertine_pools.JPG/500px-Pamukkale_Hierapolis_Travertine_pools.JPG"]}]},
+  { id:"it", ad:"İtalya", bayrak:bayrak("it"), slogan:"Sanat, tarih ve lezzet ülkesi",
+    kisa:"Sanat, tarih ve lezzet ülkesi",
+    baskent:"Roma", dil:"İtalyanca", para:"Euro (EUR)", kita:"Avrupa",
+    foto:["https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/Colosseo_2020.jpg/960px-Colosseo_2020.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Colosseum_in_Rome%2C_Italy_-_April_2007.jpg/960px-Colosseum_in_Rome%2C_Italy_-_April_2007.jpg"], pin:{x:44,y:14},
+    yerler:[
+      {ad:"Roma", foto:["https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Trevi_Fountain%2C_Rome%2C_Italy_2_-_May_2007.jpg/500px-Trevi_Fountain%2C_Rome%2C_Italy_2_-_May_2007.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/Colosseo_2020.jpg/500px-Colosseo_2020.jpg"]},
+      {ad:"Venedik", foto:["https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Canal_Grande_Chiesa_della_Salute_e_Dogana_Venezia.jpg/500px-Canal_Grande_Chiesa_della_Salute_e_Dogana_Venezia.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Grand_Canal_Venice.jpg/500px-Grand_Canal_Venice.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Venice_Grand_Canal.jpg/500px-Venice_Grand_Canal.jpg"]},
+      {ad:"Pisa", foto:["https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/The_Leaning_Tower_of_Pisa_SB.jpeg/500px-The_Leaning_Tower_of_Pisa_SB.jpeg", "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Pisa_Tower.jpg/500px-Pisa_Tower.jpg"]}]},
+  { id:"jp", ad:"Japonya", bayrak:bayrak("jp"), slogan:"Gelenek ve teknoloji bir arada",
+    kisa:"Gelenek ve teknoloji bir arada",
+    baskent:"Tokyo", dil:"Japonca", para:"Yen (JPY)", kita:"Asya",
+    foto:["https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Mount_Fuji_from_Lake_Kawaguchiko.jpg/960px-Mount_Fuji_from_Lake_Kawaguchiko.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Mt._Fuji_from_Lake_Kawaguchi.jpg/960px-Mt._Fuji_from_Lake_Kawaguchi.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Chureito_Pagoda_and_Mount_Fuji.jpg/960px-Chureito_Pagoda_and_Mount_Fuji.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Mount_Fuji_in_the_Evening_Sun_-_Shinsuke_Takahashi.jpg/960px-Mount_Fuji_in_the_Evening_Sun_-_Shinsuke_Takahashi.jpg"], pin:{x:98,y:34},
+    yerler:[
+      {ad:"Fuji Dağı", foto:["https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Mount_Fuji_from_Lake_Kawaguchiko.jpg/500px-Mount_Fuji_from_Lake_Kawaguchiko.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Mt._Fuji_from_Lake_Kawaguchi.jpg/500px-Mt._Fuji_from_Lake_Kawaguchi.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Chureito_Pagoda_and_Mount_Fuji.jpg/500px-Chureito_Pagoda_and_Mount_Fuji.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Mount_Fuji_in_the_Evening_Sun_-_Shinsuke_Takahashi.jpg/500px-Mount_Fuji_in_the_Evening_Sun_-_Shinsuke_Takahashi.jpg"]},
+      {ad:"Kyoto", foto:["https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/Kinkaku-ji_in_November_2016.jpg/500px-Kinkaku-ji_in_November_2016.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Kinkaku-ji%2C_Kyoto.jpg/500px-Kinkaku-ji%2C_Kyoto.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Fushimi_Inari_Taisha_Torii.jpg/500px-Fushimi_Inari_Taisha_Torii.jpg"]},
+      {ad:"Tokyo", foto:["https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Skyscrapers_of_Shinjuku_2009_January.jpg/500px-Skyscrapers_of_Shinjuku_2009_January.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Shibuya_Crossing%2C_Tokyo%2C_Japan.jpg/500px-Shibuya_Crossing%2C_Tokyo%2C_Japan.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Tokyo_Skyline.jpg/500px-Tokyo_Skyline.jpg"]}]},
+  { id:"eg", ad:"Mısır", bayrak:bayrak("eg"), slogan:"Antik uygarlıkların ülkesi",
+    kisa:"Antik uygarlıkların ülkesi",
+    baskent:"Kahire", dil:"Arapça", para:"Mısır poundu (EGP)", kita:"Afrika",
+    foto:["https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/All_Gizah_Pyramids.jpg/960px-All_Gizah_Pyramids.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Kheops-Pyramid.jpg/960px-Kheops-Pyramid.jpg"], pin:{x:62,y:40},
+    yerler:[
+      {ad:"Giza", foto:["https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Kheops-Pyramid.jpg/500px-Kheops-Pyramid.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/All_Gizah_Pyramids.jpg/500px-All_Gizah_Pyramids.jpg"]},
+      {ad:"Ebu Simbel", foto:["https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Abu_Simbel_Temple_May_30_2007.jpg/500px-Abu_Simbel_Temple_May_30_2007.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Abu_Simbel%2C_Ramesses_II_temple%2C_front_view.jpg/500px-Abu_Simbel%2C_Ramesses_II_temple%2C_front_view.jpg"]},
+      {ad:"Kahire", foto:["https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Cairo_skyline.jpg/500px-Cairo_skyline.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Al-Azhar_Mosque.jpg/500px-Al-Azhar_Mosque.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Cairo_from_Tower.jpg/500px-Cairo_from_Tower.jpg"]}]},
+  { id:"br", ad:"Brezilya", bayrak:bayrak("br"), slogan:"Doğa, müzik ve renkli kültür",
+    kisa:"Doğa, müzik ve renkli kültür",
+    baskent:"Brasília", dil:"Portekizce", para:"Real (BRL)", kita:"Güney Amerika",
+    foto:["https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Christ_on_Corcovado_mountain.JPG/960px-Christ_on_Corcovado_mountain.JPG", "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Cristo_Redentor_-_Rio_de_Janeiro%2C_Brasil.jpg/960px-Cristo_Redentor_-_Rio_de_Janeiro%2C_Brasil.jpg"], pin:{x:10,y:52},
+    yerler:[
+      {ad:"Rio", foto:["https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Rio_de_Janeiro_Helicoptero_47_Feb_2006_zoom.jpg/500px-Rio_de_Janeiro_Helicoptero_47_Feb_2006_zoom.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Cristo_Redentor_-_Rio_de_Janeiro%2C_Brasil.jpg/500px-Cristo_Redentor_-_Rio_de_Janeiro%2C_Brasil.jpg"]},
+      {ad:"Iguazu", foto:["https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/Foz_do_Igua%C3%A7u.jpg/500px-Foz_do_Igua%C3%A7u.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Iguazu_Falls_%283%29.JPG/500px-Iguazu_Falls_%283%29.JPG", "https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Iguazu_Argentina.jpg/500px-Iguazu_Argentina.jpg"]},
+      {ad:"Amazon", foto:["https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Amazon_Rainforest.jpg/500px-Amazon_Rainforest.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Amazon_river_Peru.jpg/500px-Amazon_river_Peru.jpg", "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Amaz%C3%B4nia.jpg/500px-Amaz%C3%B4nia.jpg"]}]}
+];
+
+/* Seçili ülke ve favoriler. Favoriler tarayıcıda (localStorage) saklanır. */
+let seciliId = "tr";
+let pinEls = {}; // ülke id -> etiket elemanı
+let favoriler = [];
+try { favoriler = JSON.parse(localStorage.getItem("favoriler")) || []; } catch (e) { favoriler = []; }
+
+const IKON = {
+  bina: `<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 9l9-5 9 5M5 9v9M9 9v9M15 9v9M19 9v9M3 20h18"/></svg>`,
+  sohbet: `<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg>`,
+  para: `<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3 3 7 3s7-1.3 7-3v-6"/></svg>`,
+  kure: `<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg>`
+};
+/* ---------- 2) YARDIMCILAR ---------- */
+const $ = (id) => document.getElementById(id);
+
+// Resim etiketi: liste verilirse sırayla dener, hiçbiri açılmazsa kendini siler (arkadaki çizim görünür)
+function sonraki(img) {
+  const liste = img.dataset.liste.split("|"), i = Number(img.dataset.i) + 1;
+  if (i < liste.length) { img.dataset.i = i; img.src = liste[i]; } else img.remove();
+}
+const resim = (src, alt) => {
+  const liste = Array.isArray(src) ? src : [src];
+  return `<img src="${liste[0]}" data-liste="${liste.join("|")}" data-i="0" alt="${alt}" loading="lazy" referrerpolicy="no-referrer" onerror="sonraki(this)">`;
+};
+
+const seciliUlke = () => ulkeler.find((u) => u.id === seciliId);
+
+/* ---------- 3) EKRANA ÇİZEN FONKSİYONLAR ---------- */
+
+// Dünyanın üstündeki ülke etiketleri (konumlarını aşağıdaki döngü her karede günceller)
+function kureyiCiz() {
+  $("pinler").innerHTML = ulkeler.map((u) =>
+    `<button class="pin gizli ${u.id === seciliId ? "aktif" : ""}" data-id="${u.id}">${resim(u.bayrak, "")}${u.ad}</button>`
+  ).join("");
+  pinEls = {};
+  document.querySelectorAll("#pinler .pin").forEach((el) => (pinEls[el.dataset.id] = el));
+}
+
+// Sağdaki ülke paneli
+function paneliCiz() {
+  const u = seciliUlke();
+  const ekli = favoriler.includes(u.id);
+  $("panel").innerHTML = `
+    <div class="gorsel foto" style="${arka(SAHNE_ULKE[u.id])}">${resim(u.foto, u.ad)}
+      <button class="kalp ${ekli ? "ekli" : ""}" data-fav="${u.id}" aria-label="Favori">${ekli ? "♥" : "♡"}</button>
+    </div>
+    <div class="ulke-baslik">${resim(u.bayrak, u.ad + " bayrağı")}
+      <div><h3>${u.ad}</h3><small>${u.slogan}</small></div></div>
+    <div class="bilgi">
+      <div><span>${IKON.bina}</span><p><small>Başkent</small>${u.baskent}</p></div>
+      <div><span>${IKON.sohbet}</span><p><small>Resmi dil</small>${u.dil}</p></div>
+      <div><span>${IKON.para}</span><p><small>Para birimi</small>${u.para}</p></div>
+      <div><span>${IKON.kure}</span><p><small>Kıta</small>${u.kita}</p></div>
+    </div>
+    <h4><span class="yildiz">★</span> Gezilecek Yerler</h4>
+    <div class="yerler">${u.yerler.map((y) =>
+      `<div><div class="gorsel" style="${arka(SAHNE_YER[y.ad])}">${resim(y.foto, y.ad)}</div><small>${y.ad}</small></div>`).join("")}</div>
+    <button class="fav-btn ${ekli ? "ekli" : ""}" data-fav="${u.id}">
+      ${ekli ? "♥ Favorilerimden Çıkar" : "♡ Favorilerime Ekle"}</button>`;
+}
+
+// Alttaki popüler ülkeler
+function kartlariCiz() {
+  $("kartlar").innerHTML = ulkeler.map((u) => `
+    <button class="kart ${u.id === seciliId ? "aktif" : ""}" data-id="${u.id}">
+      <div class="gorsel" style="${arka(SAHNE_ULKE[u.id])}">${resim(u.foto, u.ad)}</div>
+      <div class="kart-alt">
+        <div class="kart-ust">${resim(u.bayrak, "")}<strong>${u.ad}</strong><span class="ok">➜</span></div>
+        <small>${u.kisa}</small>
+      </div></button>`).join("");
+}
+
+// Favoriler listesi
+function favleriCiz() {
+  $("favListe").innerHTML = favoriler.length
+    ? favoriler.map((id) => {
+        const u = ulkeler.find((x) => x.id === id);
+        return `<li>${resim(u.bayrak, "")}${u.ad}</li>`;
+      }).join("")
+    : `<li class="bos">Henüz favori yok. Bir ülke seçip kalbe bas.</li>`;
+}
+
+function hepsiniCiz() { kureyiCiz(); paneliCiz(); kartlariCiz(); favleriCiz(); }
+
+/* ---------- 4) OLAYLAR ---------- */
+// Tek dinleyici: pin, kart veya favori butonuna tıklanınca çalışır (event delegation)
+document.addEventListener("click", (e) => {
+  const secim = e.target.closest("[data-id]");
+  if (secim) { seciliId = secim.dataset.id; hepsiniCiz(); ulkeyeDon(seciliId); return; }
+
+  const fav = e.target.closest("[data-fav]");
+  if (fav) {
+    const id = fav.dataset.fav;
+    favoriler = favoriler.includes(id) ? favoriler.filter((f) => f !== id) : [...favoriler, id];
+    try { localStorage.setItem("favoriler", JSON.stringify(favoriler)); } catch (e) {}
+    hepsiniCiz();
+  }
+});
+
+// Arama kutusu: yazdıkça ülke adını arar ve bulduğunu seçer
+$("ara").addEventListener("input", (e) => {
+  const aranan = e.target.value.trim().toLocaleLowerCase("tr");
+  if (!aranan) return;
+  const bulunan = ulkeler.find((u) => u.ad.toLocaleLowerCase("tr").startsWith(aranan));
+  if (bulunan) { seciliId = bulunan.id; hepsiniCiz(); ulkeyeDon(seciliId); }
+});
+
+/* ---------- DÖNEN DÜNYA ----------
+   Hiçbir dış kütüphane kullanmadan, <canvas> üzerine küreyi kendimiz çiziyoruz.
+   Mantık: ekrandaki her piksel için "bu piksel kürenin hangi enlem/boylamına denk geliyor?"
+   hesaplanır ve dünya haritasından o noktanın rengi alınır (ortografik izdüşüm).
+   - Fareyle (veya parmakla) sürükleyince küre döner.
+   - Bir ülkeye tıklayınca küre o ülkeyi öne getirecek şekilde döner.
+   - Ülke etiketleri enlem/boylamdan hesaplanır, arka tarafta kalınca gizlenir.
+   - 4 saniye dokunulmazsa küre kendi kendine yavaşça döner. */
+const KONUM = { tr:[39,35], it:[42.5,12.5], jp:[36,138], eg:[26,30], br:[-10,-52] }; // [enlem, boylam]
+const D2R = Math.PI / 180;
+const BOYUT = 440;                         // çizim çözünürlüğü (piksel)
+const DOKU_W = 1024, DOKU_H = 512;         // harita dokusu boyutu
+let rx = 0.5, ry = -(35 + 90) * D2R;       // başlangıçta Türkiye önde
+let hedef = null, surukleme = false, onceki = {x:0, y:0}, sonEtkilesim = Date.now();
+let dokuVeri = null, cizCtx = null, resimVeri = null, resim32 = null;
+let pikseller = null;                      // küre içindeki piksellerin hazır hesapları
+
+// Enlem/boylamı küre üzerindeki 3B noktaya çevirir
+function noktaHesapla(enlem, boylam) {
+  const phi = (90 - enlem) * D2R, theta = (boylam + 180) * D2R;
+  return { x: -Math.sin(phi) * Math.cos(theta), y: Math.cos(phi), z: Math.sin(phi) * Math.sin(theta) };
+}
+
+// Seçilen ülkeyi öne getirmek için hedef dönüş açısını ayarlar
+function ulkeyeDon(id) {
+  const k = KONUM[id]; if (!k) return;
+  hedef = { ry: -(k[1] + 90) * D2R, rx: k[0] * D2R * 0.8 };
+}
+
+// Dünya haritası yedeği: kıtalar [boylam, enlem] noktalarıyla çizilir (basitleştirilmiş).
+// NASA fotoğrafı yüklenemese bile dünya kıtalarıyla görünür.
+const KITALAR = {
+  kuzeyAmerika: [[-168,66],[-162,70],[-140,70],[-125,70],[-110,73],[-95,72],[-82,68],[-80,63],[-94,58],[-92,52],[-82,52],[-78,58],[-70,60],[-62,57],[-56,52],[-66,45],[-70,42],[-76,38],[-76,35],[-81,31],[-80,26],[-82,28],[-85,30],[-90,29],[-97,27],[-97,22],[-92,18],[-88,21],[-87,16],[-83,10],[-79,9],[-83,8],[-86,12],[-92,15],[-105,20],[-110,24],[-112,30],[-117,32],[-121,35],[-124,40],[-124,48],[-130,54],[-140,60],[-152,59],[-165,55],[-158,58]],
+  guneyAmerika: [[-80,9],[-72,12],[-62,10],[-52,5],[-50,0],[-44,-2],[-35,-6],[-39,-15],[-41,-22],[-48,-26],[-53,-34],[-58,-38],[-62,-40],[-65,-45],[-68,-52],[-72,-54],[-75,-48],[-73,-38],[-71,-30],[-70,-18],[-76,-14],[-81,-5],[-80,0],[-77,8]],
+  afrika: [[-17,21],[-10,30],[-6,36],[10,37],[11,33],[20,31],[32,31],[34,28],[38,20],[43,12],[51,12],[48,5],[40,-3],[40,-15],[35,-24],[32,-29],[26,-34],[20,-35],[17,-30],[12,-17],[13,-8],[9,0],[9,4],[4,6],[-8,4],[-14,10],[-17,15]],
+  avrasya: [[-9,37],[-9,43],[-4,48],[2,51],[8,54],[10,56],[14,54],[20,55],[24,59],[30,60],[32,70],[45,68],[60,70],[80,73],[100,77],[115,74],[130,72],[150,71],[170,70],[180,68],[180,65],[165,60],[160,54],[156,51],[150,59],[142,59],[138,54],[141,50],[135,43],[130,42],[127,38],[126,34],[122,40],[118,38],[122,32],[120,26],[110,21],[106,20],[108,12],[104,9],[100,13],[100,5],[104,1],[98,8],[98,16],[94,18],[90,22],[85,20],[80,15],[77,8],[73,17],[70,22],[67,25],[58,25],[56,27],[50,30],[48,29],[51,25],[56,26],[59,22],[52,16],[43,13],[39,21],[35,28],[34,31],[36,36],[30,36],[27,37],[26,40],[23,40],[22,37],[20,40],[19,42],[14,45],[12,44],[8,44],[3,43],[-1,37],[-5,36]],
+  iskandinavya: [[5,58],[5,62],[14,68],[24,71],[30,70],[28,66],[22,65],[18,60],[12,56],[8,58]],
+  italya: [[8,44],[12,45],[13,44],[16,42],[18,40],[16,38],[15,38],[12,42],[10,44]],
+  ingiltere: [[-5,50],[1,51],[2,53],[-2,56],[-3,58],[-6,58],[-5,55],[-3,54],[-5,52]],
+  irlanda: [[-10,52],[-6,52],[-6,55],[-9,54]],
+  avustralya: [[114,-22],[122,-18],[130,-12],[137,-12],[142,-11],[146,-19],[153,-26],[150,-37],[141,-38],[135,-34],[130,-32],[116,-35],[114,-26]],
+  japonya: [[130,31],[135,34],[140,36],[142,40],[141,45],[145,44],[140,41],[139,38],[136,36],[131,34]],
+  madagaskar: [[44,-25],[48,-25],[50,-15],[47,-13],[44,-17]],
+  borneo: [[109,1],[117,7],[119,1],[116,-4],[110,-3]]
+};
+const COLLER = [   // çöller
+  [[-12,27],[10,30],[30,30],[33,22],[20,16],[0,17],[-12,20]],
+  [[36,28],[48,29],[56,25],[52,16],[43,14],[38,22]],
+  [[114,-24],[132,-22],[136,-30],[122,-32]]
+];
+const BUZLAR = [   // buzullar
+  [[-55,60],[-45,60],[-20,70],[-20,80],[-40,83],[-60,82],[-70,78],[-55,70]],
+  [[-180,-72],[180,-72],[180,-90],[-180,-90]]
+];
+const KARADENIZ = [[28,41],[41,41],[41,45],[36,46],[30,46],[28,44]];
+
+function yedekDokuCiz() {
+  const c = document.createElement("canvas"); c.width = DOKU_W; c.height = DOKU_H;
+  const g = c.getContext("2d");
+  const cizim = (noktalar, renk, kenar) => {
+    g.beginPath();
+    noktalar.forEach(([lo, la], i) => {
+      const x = (lo + 180) / 360 * DOKU_W, y = (90 - la) / 180 * DOKU_H;
+      i ? g.lineTo(x, y) : g.moveTo(x, y);
+    });
+    g.closePath(); g.fillStyle = renk; g.fill();
+    if (kenar) { g.strokeStyle = "rgba(15,70,40,.7)"; g.lineWidth = 1.5; g.stroke(); }
+  };
+  const deniz = g.createLinearGradient(0, 0, 0, DOKU_H);
+  deniz.addColorStop(0, "#1d6aa8"); deniz.addColorStop(0.5, "#1b5e9a"); deniz.addColorStop(1, "#1d6aa8");
+  g.fillStyle = deniz; g.fillRect(0, 0, DOKU_W, DOKU_H);
+  for (const ad in KITALAR) cizim(KITALAR[ad], "#3f8f4a", true);
+  cizim(KARADENIZ, "#1b5e9a", false);
+  COLLER.forEach((p) => cizim(p, "#d2b074", false));
+  BUZLAR.forEach((p) => cizim(p, "#f4f8fb", false));
+  dokuVeri = g.getImageData(0, 0, DOKU_W, DOKU_H).data;
+}
+
+// NASA Blue Marble haritasını (Wikimedia Commons) yükler. Olmazsa yedek doku kalır.
+function haritaYukle() {
+  const adaylar = [
+    "https://upload.wikimedia.org/wikipedia/commons/c/cd/Land_ocean_ice_2048.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Whole_world_-_land_and_oceans.jpg/1920px-Whole_world_-_land_and_oceans.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Whole_world_-_land_and_oceans.jpg/1280px-Whole_world_-_land_and_oceans.jpg"
+  ];
+  (function dene(i) {
+    if (i >= adaylar.length) return;
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      try {
+        const c = document.createElement("canvas"); c.width = DOKU_W; c.height = DOKU_H;
+        const g = c.getContext("2d");
+        g.drawImage(img, 0, 0, DOKU_W, DOKU_H);
+        dokuVeri = g.getImageData(0, 0, DOKU_W, DOKU_H).data;   // izin yoksa hata verir
+      } catch (e) { dene(i + 1); }
+    };
+    img.onerror = () => dene(i + 1);
+    img.src = adaylar[i];
+  })(0);
+}
+
+// Küre içindeki her piksel için ekran koordinatı ve ışık değerini bir kez hesapla
+function pikselleriHazirla() {
+  const n = BOYUT, liste = [];
+  for (let py = 0; py < n; py++) {
+    for (let px = 0; px < n; px++) {
+      const x = (px + 0.5) / n * 2 - 1, y = 1 - (py + 0.5) / n * 2, d = x * x + y * y;
+      if (d >= 1) continue;
+      const z = Math.sqrt(1 - d);
+      const isik = Math.max(0, x * -0.4 + y * 0.35 + z * 0.85);   // ışık sol üstten
+      const kenar = 1 - Math.pow(1 - z, 3) * 0.5;                    // kenarlarda hafif kararma
+      liste.push({ i: py * n + px, x, y, z, s: (0.4 + 0.75 * isik) * kenar });
+    }
+  }
+  pikseller = liste;
+}
+
+// Küreyi mevcut dönüş açılarına göre çizer
+function kureyiBoya() {
+  const n = BOYUT, sx = Math.sin(rx), cx = Math.cos(rx), sy = Math.sin(ry), cy = Math.cos(ry);
+  resim32.fill(0);
+  for (let k = 0; k < pikseller.length; k++) {
+    const p = pikseller[k];
+    // ekran noktasını dönüşün tersiyle kürenin kendi koordinatına çevir
+    const y1 = p.y * cx + p.z * sx, z1 = -p.y * sx + p.z * cx;
+    const x2 = p.x * cy - z1 * sy, z2 = p.x * sy + z1 * cy;
+    let theta = Math.atan2(z2, -x2); if (theta < 0) theta += 2 * Math.PI;
+    const u = theta / (2 * Math.PI), v = Math.acos(Math.max(-1, Math.min(1, y1))) / Math.PI;
+    const t = (((v * DOKU_H) | 0) * DOKU_W + ((u * DOKU_W) | 0) % DOKU_W) * 4;
+    const r = Math.min(255, dokuVeri[t] * p.s), g = Math.min(255, dokuVeri[t + 1] * p.s), b = Math.min(255, dokuVeri[t + 2] * p.s);
+    resim32[p.i] = (255 << 24) | (b << 16) | (g << 8) | r;
+  }
+  cizCtx.putImageData(resimVeri, 0, 0);
+}
+
+// Etiketleri dünyanın üstündeki doğru yere koyar, arkada kalanları gizler
+function etiketleriKonumla() {
+  const w = $("kure").clientWidth, sx = Math.sin(rx), cx = Math.cos(rx), sy = Math.sin(ry), cy = Math.cos(ry);
+  for (const id in KONUM) {
+    const el = pinEls[id]; if (!el) continue;
+    const p = noktaHesapla(KONUM[id][0], KONUM[id][1]);
+    const x1 = p.x * cy + p.z * sy, z1 = -p.x * sy + p.z * cy;       // önce yatay dönüş
+    const y2 = p.y * cx - z1 * sx, z2 = p.y * sx + z1 * cx;          // sonra eğim
+    el.style.left = (x1 * 0.5 + 0.5) * w + "px";
+    el.style.top = (-y2 * 0.5 + 0.5) * w + "px";
+    el.classList.toggle("gizli", z2 < 0.15);                         // arka yüzdeki ülkeleri gizle
+  }
+}
+
+// Her karede çalışır
+function dongu() {
+  requestAnimationFrame(dongu);
+  if (hedef && !surukleme) {                       // seçilen ülkeye yumuşak geçiş
+    let d = hedef.ry - ry; d = Math.atan2(Math.sin(d), Math.cos(d));
+    ry += d * 0.08; rx += (hedef.rx - rx) * 0.08;
+    if (Math.abs(d) < 0.002 && Math.abs(hedef.rx - rx) < 0.002) hedef = null;
+  } else if (!surukleme && Date.now() - sonEtkilesim > 4000) {
+    ry += 0.002;                                   // boşta kalınca yavaş dön
+  }
+  kureyiBoya();
+  etiketleriKonumla();
+}
+
+function dunyayiBaslat() {
+  const cv = $("kureCanvas");
+  cv.width = BOYUT; cv.height = BOYUT;
+  cizCtx = cv.getContext("2d");
+  resimVeri = cizCtx.createImageData(BOYUT, BOYUT);
+  resim32 = new Uint32Array(resimVeri.data.buffer);
+  yedekDokuCiz();
+  haritaYukle();
+  pikselleriHazirla();
+
+  // Sürükleyerek döndürme (fare ve dokunmatik)
+  cv.addEventListener("pointerdown", (e) => { surukleme = true; hedef = null; onceki = {x:e.clientX, y:e.clientY}; cv.setPointerCapture(e.pointerId); });
+  cv.addEventListener("pointermove", (e) => {
+    if (!surukleme) return;
+    ry += (e.clientX - onceki.x) * 0.006;
+    rx = Math.max(-1.2, Math.min(1.2, rx + (e.clientY - onceki.y) * 0.006));
+    onceki = {x:e.clientX, y:e.clientY};
+    sonEtkilesim = Date.now();
+  });
+  const birak = () => { surukleme = false; sonEtkilesim = Date.now(); };
+  cv.addEventListener("pointerup", birak);
+  cv.addEventListener("pointercancel", birak);
+
+  dongu();
+}
+
+// Başlangıç
+hepsiniCiz();
+try { dunyayiBaslat(); } catch (hata) { console.error("Dünya başlatılamadı:", hata); } // dünya bozulsa bile sayfanın geri kalanı çalışsın
+</script>
+</body>
+</html>
